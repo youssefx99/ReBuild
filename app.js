@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const AppError = require('./src/utils/appError');
+const globalErrorHandeler = require('./src/controllers/errorController');
 const tourRouter = require('./src/routes/tourRoutes');
 const app = express();
 dotenv.config();
@@ -18,5 +20,11 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/v1/tours', tourRouter);
+
+app.all('*', (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on the server!`, 404));
+});
+
+app.use(globalErrorHandeler);
 
 module.exports = app;
